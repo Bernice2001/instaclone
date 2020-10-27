@@ -1,6 +1,7 @@
 from django.db import models
 from django.dispatch import receiver
 from django.db.models.signals import post_save
+from django.contrib.auth.models import User
 
 # Create your models here.
 class Profile(models.Model):
@@ -30,6 +31,37 @@ class Profile(models.Model):
     def get_by_id(cls, id):
         profile = Profile.objects.get(owner=id)
         return profile
+    # @classmethod
+    # def search_profile(cls, name):
+        # return cls.objects.filter(user__username__icontains=name).all() class Profile(models.Model):
+
+class Post(models.Model):
+    image = models.ImageField(upload_to='posts/')
+    name = models.CharField(max_length=250, blank=True)
+    caption = models.CharField(max_length=250, blank=True)
+    likes = models.ManyToManyField(User, related_name='likes', blank=True, )
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts')
+    created = models.DateTimeField(auto_now_add=True, null=True)
+    profile= models.ForeignKey(User, blank=True,on_delete=models.CASCADE)
+
+
+    class Meta:
+        ordering = ["-pk"]
+
+    @property
+    def get_all_comments(self):
+        return self.comments.all()
+
+    def __str__(self):
+        return str(self.name)
+
+    def save_image(self):
+     self.save()
+
+    def delete_image(self):
+     self.delete()
+
     @classmethod
-    def search_profile(cls, name):
-        return cls.objects.filter(user__username__icontains=name).all()class Profile(models.Model):
+    def get_profile_images(cls, profile):
+        images = Image.objects.filter(profile__pk=profile)
+        return images 
