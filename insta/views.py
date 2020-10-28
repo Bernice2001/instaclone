@@ -31,7 +31,7 @@ def profile(request):
 
 def Home(request):
         return render(request, 'Home.html')
-        def signup(request):
+def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
