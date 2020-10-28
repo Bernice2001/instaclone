@@ -3,13 +3,14 @@ from django.http import HttpResponse, Http404,HttpResponseRedirect
 from django.contrib.auth.decorators import login_required 
 
 # Create your views here.
-@login_required(login_url='/accounts/login/')
-def home(request):   
-    image_form = PostForm()   
-    images = Post.objects.all()    
-    commentform = CommentForm()   
-    if request.method == 'POST':       
-        form = PostForm(request.POST, request.FILES)       
-        if form.is_valid():              
-            request.user.profile.post(form)  
-    return render(request, 'insta/home.html', locals())
+@login_required(login_url= '/accounts/login/')
+def profile(request, id):
+    try:
+        user = User.objects.get(id = id)
+        profile = Profile.objects.get(user = user)
+    except:
+        profile = None
+    if profile == None:
+        return redirect('profileupdate')
+    else:
+        return render(request, 'profile.html', {"user":profile})
