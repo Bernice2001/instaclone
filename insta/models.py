@@ -65,3 +65,4 @@ class Post(models.Model):
     def get_profile_images(cls, profile):
         images = Image.objects.filter(profile__pk=profile)
         return images 
+        
