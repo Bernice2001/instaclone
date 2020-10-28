@@ -28,3 +28,6 @@ def profile(request):
     else:
         form=ProfileForm()
     return render(request, 'profile/new.html', locals())
+
+def Home(request):
+        return render(request, 'Home.html')
