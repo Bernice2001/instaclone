@@ -14,3 +14,17 @@ def profile(request, id):
         return redirect('profileupdate')
     else:
         return render(request, 'profile.html', {"user":profile})
+
+@login_required(login_url='/login')
+def profile(request):
+    current_user = request.user
+    # profile_details = Profile.objects.get(owner_id=current_user.id)
+    if request.method == 'POST':
+        form = ProfileForm(request.POST,request.FILES)
+        if form.is_valid():
+            profile =form.save(commit=False)
+            profile.owner = current_user
+            profile.save()
+    else:
+        form=ProfileForm()
+    return render(request, 'profile/new.html', locals())
