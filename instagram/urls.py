@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url('',include('insta.urls')) 
-    url('/media/'(os.path.join(BASE_DIR, 'media')))
+    url('',include('insta.urls')) ,
+    url('/media/',(os.path.join(BASE_DIR, 'media')))
 
 ]
