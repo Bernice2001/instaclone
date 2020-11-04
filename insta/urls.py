@@ -2,16 +2,16 @@ from django.conf.urls import url, include
 from . import views
 from django.urls import path
 from django.conf.urls.static import static
+from django.conf import settings
 
 
 urlpatterns = [
-    url('^$', views.Home, name='homepage'),
+    url('^$', views.home, name='homepage'),
     path('signup/', views.signup, name='signup'),
-    path('profile/$', views.profile, name='profile'),
+    path('profile/', views.profile, name='profile'),
     path('user_profile/<username>/', views.user_profile, name='user_profile'),
-    path('post/<id>', views.post_comment, name='comment'),
     url('accounts/', include('django.contrib.auth.urls')),
-    url(r'Home/$', views.Home, name='Home'),
+   # url(r'home/$', views.home, name='home'),
     url(r'^profile/(\d+)$', views.profile, name='profile'),
     url(r'^editprofile/',views.profile,name ='profile'),
 ]

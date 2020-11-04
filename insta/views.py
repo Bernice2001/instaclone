@@ -29,8 +29,8 @@ def profile(request):
         form=ProfileForm()
     return render(request, 'profile/new.html', locals())
 
-def Home(request):
-        return render(request, 'Home.html')
+def home(request):
+        return render(request, 'home.html')
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)

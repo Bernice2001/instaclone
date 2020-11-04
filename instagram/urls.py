@@ -17,11 +17,10 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.conf import settings
 from django.conf.urls.static import static
-
+import os
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url('',include('insta.urls')) ,
-    url('/media/',(os.path.join(BASE_DIR, 'media')))
 
 ]
