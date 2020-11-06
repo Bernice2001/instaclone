@@ -13,10 +13,10 @@ def profile(request, id):
     if profile == None:
         return redirect('profileupdate')
     else:
-        return render(request, 'profile.html', {"user":profile})
+        return render(request, 'insta/profile.html', {"user":profile})
 
 @login_required(login_url='/login')
-def profile(request):
+def edit_profile(request):
     current_user = request.user
     # profile_details = Profile.objects.get(owner_id=current_user.id)
     if request.method == 'POST':
@@ -27,10 +27,24 @@ def profile(request):
             profile.save()
     else:
         form=ProfileForm()
-    return render(request, 'profile/new.html', locals())
+    return render(request, 'insta/profile/new.html', locals())
 
 def home(request):
-        return render(request, 'home.html')
+    return render(request, 'insta/home.html')
+
+def search_results(request):
+    
+    if "users" in request.GET and request.GET["users"]:
+        search_term = request.GET.get("users")
+        searched_accounts = Post.search_user(search_term)
+        message = f"{search_term}"
+
+        return render(request, 'search.html',{"message":message,"users": searched_accounts})
+
+    else:
+        message = "You haven't searched for any user"
+        return render(request, 'search.html',{"message":message})
+
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
@@ -44,25 +58,3 @@ def signup(request):
     else:
         form = SignUpForm()
     return render(request, 'registration/signup.html', {'form': form})
-# view profile
-@login_required(login_url='login')
-def user_profile(request, username):
-    user_prof = get_object_or_404(User, username=username)
-    if request.user == user_prof:
-        return redirect('profile', username=request.user.username)
-    user_posts = user_prof.profile.posts.all()
-    followers = Follow.objects.filter(followee=user_prof.profile)
-    follow_status = None
-    for follower in followers:
-        if request.user.profile == follower.follower:
-            follow_status = True
-        else:
-            follow_status = False
-    params = {
-        'user_prof': user_prof,
-        'user_posts': user_posts,
-        'followers': followers,
-        'follow_status': follow_status
-    }
-    print(followers)
-    return render(request, 'profile/user_profile.html', params)
