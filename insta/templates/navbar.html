@@ -12,15 +12,15 @@
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">registration</a>
+          <a class="nav-link" href="/accounts/register">registration</a>
         </li>
         {% if user.is_authenticated %}
         <li class="nav-item">
-          <a class="nav-link" href="#">logout</a>
+          <a class="nav-link" href="/logout">logout</a>
         </li>
         {% else %}
         <li class="nav-item">
-            <a class="nav-link" href="#">login</a>
+            <a class="nav-link" href="/accounts/login">login</a>
           </li>
         {% endif %}
 

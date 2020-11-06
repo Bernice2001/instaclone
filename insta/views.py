@@ -4,9 +4,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout as django_logout
+from .forms import *
 
 def home(request):
-    return render(request, 'insta/home.html')
+    return render(request, 'home.html')
 
 @login_required
 def profile(request, username):
@@ -40,6 +41,24 @@ def edit_profile(request,username):
             form = EditProfileForm(instance=profile)
     legend = 'Edit Profile'
     return render(request, 'profile/update.html', {'legend':legend, 'form':ProfileForm})
+
+@login_required
+def profile_form(request,username):
+    userX = request.user
+    user = get_object_or_404(User, username=username)
+    if request.method == "POST":
+        form = ProfileForm(request.POST, request.FILES)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.user = userX
+            data.save()
+            return HttpResponseRedirect(reverse('MainPage'))
+        else:
+            form = ProfileForm()
+    legend = 'Create Profile'
+    
+    return render(request, 'profile/upd_prof.html', {'form':ProfileForm, 'legend':legend, 'user':user, 
+                                                   'userX':userX})
 
 def search_results(request):
     
