@@ -1,52 +1,32 @@
 from django.db import models
-from django.dispatch import receiver
-from django.db.models.signals import post_save
+from cloudinary.models import CloudinaryField
 from django.contrib.auth.models import User
+from django.utils import timezone
+import uuid
 
 # Create your models here.
 class Profile(models.Model):
 
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
-    name = models.TextField(default="Anonymous")
     profile_picture = models.ImageField(upload_to='images/', default='default.png')
     bio = models.TextField(max_length=500, default="My Bio", blank=True)
     location = models.CharField(max_length=60, blank=True)
 
     def __str__(self):
-        return f'{self.user.username} Profile'
+        return self.user.username
 
-    @receiver(post_save, sender=User)
-    def create_user_profile(sender, instance, created, **kwargs):
-        if created:
-            Profile.objects.create(user=instance)
-
-    @receiver(post_save, sender=User)
-    def save_user_profile(sender, instance, **kwargs):
-        instance.profile.save()
-    def save_profile(self):
-        self.user
-    def delete_profile(self):
-        self.delete()
-    @classmethod
-    def get_by_id(cls, id):
-        profile = Profile.objects.get(owner=id)
-        return profile
-    # @classmethod
-    # def search_profile(cls, name):
-        # return cls.objects.filter(user__username__icontains=name).all() class Profile(models.Model):
 
 class Post(models.Model):
     image = models.ImageField(upload_to='posts/')
     name = models.CharField(max_length=250, blank=True)
     caption = models.CharField(max_length=250, blank=True)
-    likes = models.ManyToManyField(User, related_name='likes', blank=True, )
-    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='posts')
-    created = models.DateTimeField(auto_now_add=True, null=True)
-    profile= models.ForeignKey(User, blank=True,on_delete=models.CASCADE)
+    like = models.IntegerField(default=0)
+    user = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='user_profile')
+    date = models.DateTimeField(auto_now_add=True, null=True)
 
 
     class Meta:
-        ordering = ["-pk"]
+        ordering = ["-date"]
 
     @property
     def get_all_comments(self):
@@ -66,17 +46,32 @@ class Post(models.Model):
         images = Image.objects.filter(profile__pk=profile)
         return images 
 
+class Follow(models.Model):
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='follower')
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='following')
+    
+class Stream(models.Model):
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stream_following')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    date = models.DateTimeField()
+    
+    def add_post(sender,instance,*args,**kwargs):
+        post = instance
+        user = post.user
+        followers = Follow.objects.all().filter(following=user)
+        
+        for follower in followers:
+            stream = Stream(post=post, user=follower.follower, date=post.date, following=user)
+            stream.save()
+            
+class Likes(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_like')
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_like')
+
 class Comment(models.Model):
-    image = models.ForeignKey(Post,blank=True, on_delete=models.CASCADE,related_name='comment')
-    comment_owner = models.ForeignKey(User, blank=True, on_delete=models.CASCADE)
-    comment= models.TextField()
-    def save_comment(self):
-        self.save()
-    def delete_comment(self):
-        self.delete()
-    @classmethod
-    def get_image_comments(cls, id):
-        comments = Comment.objects.filter(image__pk=id)
-        return comments
-    def __str__(self):
-        return str(self.comment)        
+    comment = models.TextField(null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_comment')
+    date = models.DateTimeField(auto_now_add=True)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='post_comment')
+            

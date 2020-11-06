@@ -8,6 +8,39 @@ from django.contrib.auth import logout as django_logout
 def home(request):
     return render(request, 'insta/home.html')
 
+@login_required
+def profile(request, username):
+    user = get_object_or_404(User, username=username)
+    profile = Profile.objects.get(user=user)
+    avatar = Profile.objects.all()
+    posts = Post.objects.filter(user=user).order_by("-date")
+    
+    post_count = Post.objects.filter(user=user).count()
+    follower_count = Follow.objects.filter(following=user).count()
+    following_count = Follow.objects.filter(follower=user).count()
+    follow_status = Follow.objects.filter(following=user, follower=request.user).exists()
+    
+    return render(request,'profile/profile.html', {'user':user, 'profile':profile, 'posts':posts, 'avatar':avatar, 'post_count':post_count, 
+                                                   'follower_count':follower_count, 'following_count':following_count,'follow_status':follow_status})
+
+@login_required
+def edit_profile(request,username):
+    user = get_object_or_404(User, username=username)
+    profile = user.profile
+    form = EditProfileForm(instance=profile)
+    
+    if request.method == "POST":
+        form = EditProfileForm(request.POST, request.FILES, instance=profile)
+        if form.is_valid():
+            data = form.save(commit=False)
+            data.user = user
+            data.save()
+            return HttpResponseRedirect(reverse('profile', args=[username]))
+        else:
+            form = EditProfileForm(instance=profile)
+    legend = 'Edit Profile'
+    return render(request, 'profile/update.html', {'legend':legend, 'form':ProfileForm})
+
 def search_results(request):
     
     if "users" in request.GET and request.GET["users"]:

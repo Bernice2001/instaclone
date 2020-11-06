@@ -10,11 +10,14 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
+from pathlib import Path
 import os
+import django_heroku
+import dj_database_url
+from decouple import config,Csv
 import cloudinary
 import cloudinary.uploader
 import cloudinary.api
-
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -24,20 +27,12 @@ MODE=config("MODE", default="dev")
 SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = config('G_MAIL')
-EMAIL_HOST_PASSWORD = config('G_PASSWORD')
-EMAIL_PORT = 587
-
 cloudinary.config( 
   cloud_name = config('CLOUD_NAME'), 
   api_key = config('CLOUD_API'),
   api_secret = config('API_SECRET'),
 )
 
-# development
 if config('MODE')=="dev":
    DATABASES = {
        'default': {
