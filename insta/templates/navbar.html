@@ -11,28 +11,33 @@
           <a class="nav-link" href="/">Home
           </a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/accounts/register">registration</a>
-        </li>
         {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="">Add Post</a>
+        </li>      
         <li class="nav-item">
           <a class="nav-link" href="/logout">logout</a>
         </li>
         {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="/accounts/register">registration</a>
+        </li>
         <li class="nav-item">
             <a class="nav-link" href="/accounts/login">login</a>
           </li>
         {% endif %}
 
       </ul>
+      {% if user.is_authenticated %}
       <ul class="navbar-nav ml-auto nav-flex-icons">
         <li class="nav-item avatar">
-          <a class="nav-link p-0" href="#">
+          <a class="nav-link p-0" href="{% url 'profile' request.user.username %}">
             <img src="https://mdbootstrap.com/img/Photos/Avatars/avatar-5.jpg" class="rounded-circle z-depth-0"
               alt="avatar image" height="35">
           </a>
         </li>
       </ul>
+      {% endif %}
     </div>
   </nav>
   <!--/.Navbar -->

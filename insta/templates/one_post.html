@@ -3,7 +3,7 @@
 {% include "base.html" %}
 
 {% block styles %}
-<link rel="stylesheet" href="{% static 'css/movie.css' %}">
+<link rel="stylesheet" href="{% static 'css/post.css' %}">
 {% endblock  %}
 
 {% block content %}
@@ -15,7 +15,7 @@
 <div class="container">
     {% if post %}
     
-    <h1 style="text-decoration: underline;" class="text-center">{{ post.image_name }}</h1>
+    <h1 style="text-decoration: underline;" class="text-center">{{ post.name }}</h1>
     <p class="lead text-center">{{ post.caption }}</p>
 
     <div class="row">
@@ -32,11 +32,11 @@
                         <div style="max-width: 100%;">
                             <div class="row no-gutters">
                               <div class="col-md-1 mt-3">                                  
-                                <img src="{{ post.profile.avatar.url }}" class="card-img img-fluid rounded-circle" alt="avatar">
+                                <img src="{{ post.user.profile_picture.url }}" class="card-img img-fluid rounded-circle" alt="avatar">
                               </div>
                               <div class="col-md-8">
                                 <div class="card-body">
-                                  <h3 class="card-title">{{ post.user }}</h3>
+                                  <h3 class="card-title">{{ post.user.user }}</h3>
                                 
                                 </div>
                               </div>

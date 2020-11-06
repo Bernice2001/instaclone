@@ -8,10 +8,11 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('logout/', views.logout, name='logout'),
     path('accounts/login', views.login, name='login'),
-    path('profile/<username>/', views.profile, name='user_profile'),
+    path('profile/<username>/', views.profile, name='profile'),
     path('profile/edit/<username>',views.edit_profile,name ='editProfile'),
     path('profile/create/<username>/', views.profile_form, name='createProfile'),
     path('singel_post/<post_id>/', views.single_post, name='singlePost'),
+    path('<uuid:post_id>/like', views.like, name='likePost'),
     path('serach/', views.search_results, name='search_results')
 ]
 if settings.DEBUG:

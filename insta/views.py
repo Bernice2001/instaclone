@@ -7,6 +7,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth import logout as django_logout
 from .forms import *
 
+@login_required
 def home(request):
     posts = Post.objects.all()
     return render(request, 'home.html', {'posts':posts})
@@ -32,13 +33,35 @@ def single_post(request,post_id):
     return render(request, 'one_post.html', {'post':post, 'form':CommentForm, 'comments':comments})  
 
 @login_required
+def like(request,post_id):
+    user = request.user
+    post = Post.objects.get(id=post_id)
+    current_likes = post.like
+    
+    liked = Likes.objects.filter(user=user, post=post).count()
+    
+    if not liked:
+        like = Likes.objects.create(user=user,post=post)
+        
+        current_likes = current_likes + 1
+        
+    else:
+        Likes.objects.filter(user=user,post=post).delete()
+        current_likes = current_likes - 1
+        
+    post.like = current_likes
+    post.save() 
+    
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@login_required
 def profile(request, username):
     user = get_object_or_404(User, username=username)
     profile = Profile.objects.get(user=user)
     avatar = Profile.objects.all()
-    posts = Post.objects.filter(user=user).order_by("-date")
+    posts = Post.objects.filter(user=profile).order_by("-date")
     
-    post_count = Post.objects.filter(user=user).count()
+    post_count = Post.objects.filter(user=profile).count()
     follower_count = Follow.objects.filter(following=user).count()
     following_count = Follow.objects.filter(follower=user).count()
     follow_status = Follow.objects.filter(following=user, follower=request.user).exists()
@@ -62,7 +85,7 @@ def edit_profile(request,username):
         else:
             form = EditProfileForm(instance=profile)
     legend = 'Edit Profile'
-    return render(request, 'profile/update.html', {'legend':legend, 'form':ProfileForm})
+    return render(request, 'profile/upd_prof.html', {'legend':legend, 'form':ProfileForm})
 
 @login_required
 def profile_form(request,username):
