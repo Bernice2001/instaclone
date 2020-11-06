@@ -1,0 +1,21 @@
+.avatar img{
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+}
+
+.card-header{
+    display: flex;
+    flex-direction: row;
+    padding: 7px;
+}
+
+.card-content img{
+    width: 100%;
+    height: 380px;
+    object-fit: cover;
+}
+
+.card{
+    width: 600px;
+}

@@ -6,10 +6,9 @@ import uuid
 
 # Create your models here.
 class Profile(models.Model):
-
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     profile_picture = CloudinaryField('image')
-    bio = models.TextField(max_length=500, default="My Bio", blank=True)
+    bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=60, blank=True)
 
     def __str__(self):
